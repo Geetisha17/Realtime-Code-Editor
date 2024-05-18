@@ -1,38 +1,180 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.homePageWrapper
+{
+  height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.formWrapper{
+  background-color: rgb(49, 10, 85);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+footer{
+  position: fixed;
+  bottom: 0;
+}
+
+.inputGrp{
+  display: flex;
+  flex-direction: column;
+}
+
+.mainLabel{
+  margin-bottom: 12px;
+  margin-top: -14px;
+}
+.formWrapper h2{
+  margin-top: -2px;
+}
+.inputBox{
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  margin-bottom: 14px;
+  background-color: #eee;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.btn{
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.joinBtn{
+  background-color: rgb(139, 84, 154);
+  width: 100px;
+  margin-left: auto;
+}
+
+.joinBtn:hover{
+  background-color: rgb(206, 147, 222);
+}
+.createInfo{
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.createNewBtn{
+  color: rgb(139, 84, 154);
+  text-decoration: none;
+  border-bottom: 1px solid rgb(139, 84, 154);
+  transition: all 0.3s ease-in-out;
+}
+.createNewBtn:hover{
+  color:rgb(206, 147, 222);
+  border-color: rgb(206, 147, 222);
+}
+
+.mainWrap{
+  display: grid;
+  grid-template-columns: 230px 1fr 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+.aside{
+  background-color: rgb(49, 10, 85);
+  padding: 16px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  /* margin-bottom: ; */
+}
+.asideInner{
+  flex:1;
+  /* margin-bottom: 380px; */
+}
+.clientList{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-left: 10px;
+}
+
+.client{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.userName{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heading{
+  border-bottom: 1px solid #424242;
+}
+.leavebtn{
+  margin-top: 20px;
+  background-color: rgb(139, 84, 154);
+  width: 100%;
+  margin-bottom: 20px;
+  /* margin-left: auto; */
+}
+.copyBtn{
+  background-color: #eee;
+}
+.copyBtn:hover{
+  background-color: #aaa6a6;
+}
+.leavebtn:hover{
+  background-color: rgb(206, 147, 222);
+}
+
+.opt{
+  background-color:  rgb(49, 10, 85);
+  color:white;
+  padding: 3px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+}
+.opt:hover{
+  background-color: rgb(206, 147, 222);
+}
+
+.compilerdiv{
+  display: flex;
+}
+.outputContainer{
+  background-color: rgb(23, 22, 22);
+  color: white;
+  width: 45vw;
+}
+
+.topshelve{
+   position: relative;
+   top: -31px;
+   left: 7px;
+}
+
+.forLan{
+  width: 45vw;
+}
+
+.runBtn{
+  font-size: 10px;
+  padding: 9px;
+}
+
+.outputHeading{
+  position: relative;
+  top: -45px;
+}
+
+.rescontainer{
+  position: relative;
+  top: -48px;
 }
