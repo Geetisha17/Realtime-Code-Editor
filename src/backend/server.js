@@ -5,15 +5,21 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const { ACTIONS } = require('../Actions');
-const server = http.createServer(app);
+
 const userSocketMap = {};
 
 function getAllConnectedClients(roomId) {
-    Array.from(io.sockets.adapter.rooms.get(roomId));
+    return Array.from(io.sockets.adapter.rooms.get(roomId) || [] ).map((socketId)=>{
+        return {
+            socketId,
+            username : userSocketMap[socketId],
+        }
+    });
 }
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
 
 app.use(bodyParser.json());
 
@@ -39,11 +45,21 @@ io.on('connection', (socket) => {
     socket.on(ACTIONS.JOIN , ({roomId , username})=>{
         userSocketMap[socket.id] = username;
         socket.join(roomId);
+        
         const clients = getAllConnectedClients(roomId);
+        clients.forEach(({socketId})=>{
+                    io.to(socketId).emit(ACTIONS.JOINED,{
+                        clients,
+                        username,
+                        socketId : socket.id,
+                    });
+        })
+        
     })
 
     socket.on('disconnect', () => {
         console.log('socket disconnected', socket.id);
+        delete userSocketMap[socket.id];
     });
 });
 
