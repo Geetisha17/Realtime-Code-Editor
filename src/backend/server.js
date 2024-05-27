@@ -9,11 +9,11 @@ const { ACTIONS } = require('../Actions');
 const userSocketMap = {};
 
 function getAllConnectedClients(roomId) {
-    return Array.from(io.sockets.adapter.rooms.get(roomId) || [] ).map((socketId)=>{
+    return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map((socketId) => {
         return {
             socketId,
-            username : userSocketMap[socketId],
-        }
+            username: userSocketMap[socketId],
+        };
     });
 }
 
@@ -27,45 +27,51 @@ app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
     credentials: true,
-    allowedHeaders: ['Content-Type']
+    allowedHeaders: ['Content-Type'],
 }));
-
 
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:3000',
         methods: ['GET', 'POST'],
-        credentials: true
-    }
+        credentials: true,
+    },
 });
 
 io.on('connection', (socket) => {
-    console.log('socket connected', socket.id);
-
-    socket.on(ACTIONS.JOIN , ({roomId , username})=>{
+    socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
         userSocketMap[socket.id] = username;
         socket.join(roomId);
-        
+
         const clients = getAllConnectedClients(roomId);
-        clients.forEach(({socketId})=>{
-                    io.to(socketId).emit(ACTIONS.JOINED,{
-                        clients,
-                        username,
-                        socketId : socket.id,
-                    });
-        })
-        
-    })
+        clients.forEach(({ socketId }) => {
+            io.to(socketId).emit(ACTIONS.JOINED, {
+                clients,
+                username,
+                socketId: socket.id,
+            });
+        });
+
+        console.log(`User ${username} with socket ID ${socket.id} joined room ${roomId}`);
+    });
 
     socket.on('disconnect', () => {
         console.log('socket disconnected', socket.id);
+        const username = userSocketMap[socket.id];
         delete userSocketMap[socket.id];
+        const clients = getAllConnectedClients(socket.roomId);
+        clients.forEach(({ socketId }) => {
+            io.to(socketId).emit(ACTIONS.DISCONNECTED, {
+                socketId: socket.id,
+                username,
+            });
+        });
     });
 });
 
 app.get('/compile', (req, res) => {
     console.log("GET request to /compile");
-    res.send({ output: 'Output of the executed code' }); 
+    res.send({ output: 'Output of the executed code' });
 });
 
 app.post('/compile', (req, res) => {
@@ -76,13 +82,13 @@ app.post('/compile', (req, res) => {
         language: language,
         versionIndex: "0",
         clientId: "97b63abb86f4cf9326c2643bd93d25c9",
-        clientSecret: "4be49679e4106419ea9894c846ffab09bf721ae3a475fcc88a19c1f1566fea7"
+        clientSecret: "4be49679e4106419ea9894c846ffab09bf721ae3a475fcc88a19c1f1566fea7",
     };
 
     request({
         url: 'https://api.jdoodle.com/v1/execute',
         method: "POST",
-        json: program
+        json: program,
     }, function (error, response, body) {
         if (error) {
             res.status(500).send({ error: 'Error executing code' });
