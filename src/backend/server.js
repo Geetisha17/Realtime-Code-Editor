@@ -53,6 +53,19 @@ io.on('connection', (socket) => {
         });
 
         console.log(`User ${username} with socket ID ${socket.id} joined room ${roomId}`);
+
+        socket.on('disconnecting' , ()=>{
+            const rooms = [...socket.rooms];
+            rooms.forEach((roomId)=>{
+                socket.in(roomId).emit(ACTIONS.DISCONNECTED,{
+                    socketId:socket.id,
+                    username: userSocketMap[socket.Id]
+                });
+            });
+
+            delete userSocketMap[socket.id];
+        });
+        socket.leave();
     });
 
     socket.on('disconnect', () => {

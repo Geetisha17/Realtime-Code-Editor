@@ -5,7 +5,7 @@ import { CODE_SNIPPETS } from "../constants";
 import Output from './Output';
 
 const CodeEditor = () => {
-  const editorRef = useRef();
+  const editorRef = useRef(null);
   const [language, setLanguage] = useState('cpp');
   const [editorValue, setEditorValue] = useState(CODE_SNIPPETS[language]); // Separate state for editor value
 

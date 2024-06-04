@@ -61,7 +61,7 @@ const EditorPage = () => {
     };
     
     const handleUserDisconnected = ({ socketId, username }) => {
-        toast(`${username} left the room`);
+        toast.success(`${username} left the room`);
         setClients(prevClients => prevClients.filter(client => client.socketId !== socketId));
     };
 
