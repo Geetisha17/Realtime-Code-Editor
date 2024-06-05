@@ -6,9 +6,9 @@ import toast from 'react-hot-toast';
 import { ACTIONS } from '../Actions';
 import { useLocation, useNavigate, Navigate, useParams } from 'react-router-dom';
 
-const EditorPage = () => {
+const EditorPage = ({socketRef}) => {
     const [clients, setClients] = useState([]); 
-    const socketRef = useRef(null);
+    // const socketRef = useRef(null);
     const location = useLocation();
     const reactNavigator = useNavigate();
     const { roomId } = useParams();
