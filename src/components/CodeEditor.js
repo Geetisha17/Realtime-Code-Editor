@@ -13,36 +13,38 @@ const CodeEditor = ({ socketRef, roomId }) => {
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
-    editor.onDidChangeModelContent((event) => {
-      const code = editor.getValue();
-      console.log('workdingg' , code);
-      if (socketRef.current) {
-        socketRef.current.emit(ACTIONS.CODE_CHANGE, { roomId, code });
-      }
-      console.log(' changed:', code);
+
+    editor.onDidChangeModelContent(() => {
+      const value = editor.getValue();
+      // console.log(socketRef.current.emit(ACTIONS.CODE_CHANGE));
+      socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+        roomId,
+        code: value,
+      });
     });
   };
 
   useEffect(() => {
-    if(socketRef.current)
-      {
-        const handleCodeChange = ({ code }) => {
-          if (code !== null && editorRef.current) {
-            editorRef.current.setValue(code);
-          }
-        };
-    
-        if (socketRef.current) {
-          socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
-        }
-    
-        return () => {
-          if (socketRef.current) {
-            socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
-          }
-        };
+    const handleCodeChange = ({ code }) => {
+      console.log('Received ', code);
+      if (code !== null) {
+        editorRef.current.setValue(code);
       }
-  }, [socketRef.current]);
+    };
+  
+    if (socketRef.current && socketRef.current.connected) {
+      console.log('Sett ');
+      // console.log(socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange));
+      socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
+    }
+  
+    return () => {
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
+      }
+    };
+  }, [socketRef.current, roomId]);
+  
 
   const onSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
@@ -53,42 +55,41 @@ const CodeEditor = ({ socketRef, roomId }) => {
     }
   };
 
-  function throttle(fn, limit) {
-    let inThrottle;
-    return function (...args) {
-      if (!inThrottle) {
-        fn(...args);
-        inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
-      }
-    };
-  }
-
   useEffect(() => {
-    const handleResize = entries => {
-      for (let entry of entries) {
-        console.log(entry.target);
-      }
-    };
-
-    const throttledHandleResize = throttle(handleResize, 100);
-    const resizeObserver = new ResizeObserver(throttledHandleResize);
-
-    if (editorRef.current) {
-      const editorElement = editorRef.current.getDomNode();
-      if (editorElement) {
-        resizeObserver.observe(editorElement);
-      }
-    }
-
-    return () => {
+    const handleResize = () => {
       if (editorRef.current) {
         const editorElement = editorRef.current.getDomNode();
         if (editorElement) {
-          resizeObserver.unobserve(editorElement);
+          console.log('rexis', editorElement);
         }
       }
-      resizeObserver.disconnect();
+    };
+
+    const throttledHandleResize = () => {
+      const resizeObserver = new ResizeObserver(handleResize);
+
+      if (editorRef.current) {
+        const editorElement = editorRef.current.getDomNode();
+        if (editorElement) {
+          resizeObserver.observe(editorElement);
+        }
+      }
+
+      return () => {
+        if (editorRef.current) {
+          const editorElement = editorRef.current.getDomNode();
+          if (editorElement) {
+            resizeObserver.unobserve(editorElement);
+          }
+        }
+        resizeObserver.disconnect();
+      };
+    };
+
+    window.addEventListener('resize', throttledHandleResize);
+
+    return () => {
+      window.removeEventListener('resize', throttledHandleResize);
     };
   }, []);
 
@@ -103,7 +104,6 @@ const CodeEditor = ({ socketRef, roomId }) => {
           language={language}
           theme="vs-dark"
           onMount={onMount}
-          defaultValue={CODE_SNIPPETS[language]}
           value={editorValue}
           onChange={(value) => setEditorValue(value)}
         />

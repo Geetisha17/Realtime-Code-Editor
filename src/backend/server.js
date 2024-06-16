@@ -39,10 +39,10 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    console.log(`Socket connected: ${socket.id}`); 
+    console.log(`Socket connected: ${socket.id}`);
 
     socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
-        console.log(`User ${username} joining room ${roomId}`); 
+        console.log(`User ${username} joining room ${roomId}`);
         userSocketMap[socket.id] = username;
         socket.join(roomId);
 
@@ -55,42 +55,35 @@ io.on('connection', (socket) => {
             });
         });
 
-        socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
-            console.log('Received CODE_CHANGE with code:', code); 
-            io.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
-        });
-
         console.log(`User ${username} with socket ID ${socket.id} joined room ${roomId}`);
+    });
 
-        socket.on('disconnecting', () => {
-            const rooms = [...socket.rooms];
-            rooms.forEach((roomId) => {
-                socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
-                    socketId: socket.id,
-                    username: userSocketMap[socket.id], 
-                });
+    socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
+        console.log(`Received  from ${socket.id}  room ${roomId}  code: ${code}`);
+        io.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+    });
+    
+
+    socket.on('disconnecting', () => {
+        const rooms = [...socket.rooms];
+        rooms.forEach((roomId) => {
+            socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
+                socketId: socket.id,
+                username: userSocketMap[socket.id],
             });
-
-            delete userSocketMap[socket.id];
         });
+
+        delete userSocketMap[socket.id];
     });
 
     socket.on('disconnect', () => {
         console.log('Socket disconnected', socket.id);
         const username = userSocketMap[socket.id];
         delete userSocketMap[socket.id];
-        const clients = getAllConnectedClients(socket.roomId);
-        clients.forEach(({ socketId }) => {
-            io.to(socketId).emit(ACTIONS.DISCONNECTED, {
-                socketId: socket.id,
-                username,
-            });
-        });
     });
 });
 
 app.get('/compile', (req, res) => {
-    console.log("GET request to /compile");
     res.send({ output: 'Output of the executed code' });
 });
 
