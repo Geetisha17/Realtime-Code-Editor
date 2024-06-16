@@ -14,10 +14,6 @@ Collaborative editing allows multiple users to work on the same file simultaneou
 
 - **Code Formatting**
 Code formatting automatically adjusts the indentation, spacing, and overall structure of code to conform to predefined style guidelines or user preferences. This helps maintain consistency across the codebase, improves readability, and reduces time spent on manual formatting. Users can customize formatting rules or choose from preset configurations to suit their coding standards.
-
-## Technologies Used
-- **Frontend**: HTML, CSS, JavaScript (React.js)
-- **Backend**: Node.js, Express.js, WebSocket (Socket.io)
   
 ## Installation
 1. Clone the repository:
