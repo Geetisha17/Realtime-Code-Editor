@@ -39,7 +39,10 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
+    console.log(`Socket connected: ${socket.id}`); 
+
     socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
+        console.log(`User ${username} joining room ${roomId}`); 
         userSocketMap[socket.id] = username;
         socket.join(roomId);
 
@@ -52,24 +55,28 @@ io.on('connection', (socket) => {
             });
         });
 
+        socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
+            console.log('Received CODE_CHANGE with code:', code); 
+            io.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+        });
+
         console.log(`User ${username} with socket ID ${socket.id} joined room ${roomId}`);
 
-        socket.on('disconnecting' , ()=>{
+        socket.on('disconnecting', () => {
             const rooms = [...socket.rooms];
-            rooms.forEach((roomId)=>{
-                socket.in(roomId).emit(ACTIONS.DISCONNECTED,{
-                    socketId:socket.id,
-                    username: userSocketMap[socket.Id]
+            rooms.forEach((roomId) => {
+                socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
+                    socketId: socket.id,
+                    username: userSocketMap[socket.id], 
                 });
             });
 
             delete userSocketMap[socket.id];
         });
-        socket.leave();
     });
 
     socket.on('disconnect', () => {
-        console.log('socket disconnected', socket.id);
+        console.log('Socket disconnected', socket.id);
         const username = userSocketMap[socket.id];
         delete userSocketMap[socket.id];
         const clients = getAllConnectedClients(socket.roomId);
