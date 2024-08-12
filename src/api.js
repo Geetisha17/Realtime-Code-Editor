@@ -14,7 +14,7 @@ export const executeCode = async (sourceCode, language) => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error executing code:', error);
-        return { error: 'Error executing code' };
+        console.error('Error ', error);
+        return { error: 'Error' };
     }
 };

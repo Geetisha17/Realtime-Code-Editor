@@ -60,7 +60,7 @@ io.on('connection', (socket) => {
 
     socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
         console.log(`Received  from ${socket.id}  room ${roomId}  code: ${code}`);
-        io.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+        socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
     });
     
 
@@ -78,7 +78,6 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('Socket disconnected', socket.id);
-        const username = userSocketMap[socket.id];
         delete userSocketMap[socket.id];
     });
 });

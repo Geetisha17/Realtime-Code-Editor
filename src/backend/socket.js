@@ -8,5 +8,5 @@ export const initSocket = async () => {
         transports: ['websocket'],
     };
 
-    return io('http://localhost:5000', options); // Make sure this URL matches your server's URL
+    return io('http://localhost:5000', options); 
 };

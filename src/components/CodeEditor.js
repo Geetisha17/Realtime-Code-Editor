@@ -4,11 +4,20 @@ import Langss from './Langss';
 import { CODE_SNIPPETS } from "../constants";
 import Output from './Output';
 import { ACTIONS } from '../Actions';
+// import {debounce} from 'lodash';
 
 const CodeEditor = ({ socketRef, roomId }) => {
   const editorRef = useRef(null);
   const [language, setLanguage] = useState('cpp');
+  // const [editorValue,setEditorValue] = useState('');
   const [editorValue, setEditorValue] = useState(CODE_SNIPPETS[language]);
+
+  // const debouncedEmitCodeChange = debounce((code) => {
+  //   socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+  //     roomId,
+  //     code,
+  //   });
+  // }, 500);
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -16,7 +25,7 @@ const CodeEditor = ({ socketRef, roomId }) => {
 
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
-      // console.log(socketRef.current.emit(ACTIONS.CODE_CHANGE));
+      console.log(value);
       socketRef.current.emit(ACTIONS.CODE_CHANGE, {
         roomId,
         code: value,
@@ -24,31 +33,35 @@ const CodeEditor = ({ socketRef, roomId }) => {
     });
   };
 
+  
+
   useEffect(() => {
-    const handleCodeChange = ({ code }) => {
+    const handleCodeChange =({ code }) => {
       console.log('Received ', code);
-      if (code !== null) {
-        editorRef.current.setValue(code);
+      if (editorRef.current && code !== null) {
+        const currentValue = editorRef.current.getValue();
+        if (currentValue !== code) {
+          editorRef.current.setValue(code);
+        }
       }
-    };
+    }
   
     if (socketRef.current && socketRef.current.connected) {
-      console.log('Sett ');
-      // console.log(socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange));
-      socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
+      socketRef.current.on(ACTIONS.CODE_CHANGE,  handleCodeChange);
     }
   
     return () => {
       if (socketRef.current && socketRef.current.connected) {
-        socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
+        socketRef.current.off(ACTIONS.CODE_CHANGE,handleCodeChange);
       }
     };
-  }, [socketRef.current, roomId]);
+  }, [socketRef.current]);
   
 
   const onSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
     const snippet = CODE_SNIPPETS[selectedLanguage];
+    console.log(snippet," sd");
     setEditorValue(snippet);
     if (editorRef.current) {
       editorRef.current.setValue(snippet);
