@@ -4,64 +4,81 @@ import Langss from './Langss';
 import { CODE_SNIPPETS } from "../constants";
 import Output from './Output';
 import { ACTIONS } from '../Actions';
-// import {debounce} from 'lodash';
 
-const CodeEditor = ({ socketRef, roomId }) => {
+const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef}) => {
   const editorRef = useRef(null);
   const [language, setLanguage] = useState('cpp');
-  // const [editorValue,setEditorValue] = useState('');
   const [editorValue, setEditorValue] = useState(CODE_SNIPPETS[language]);
-
-  // const debouncedEmitCodeChange = debounce((code) => {
-  //   socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-  //     roomId,
-  //     code,
-  //   });
-  // }, 500);
 
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
-
+  
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
-      console.log(value);
+      onCodeChange(value);
+      console.log('Code changed:', value);
       socketRef.current.emit(ACTIONS.CODE_CHANGE, {
         roomId,
         code: value,
       });
+      socketRef.current.emit(ACTIONS.SYNC_CODE, {
+        roomId, 
+        code: codeRef.current,
+    });
     });
   };
-
   
-
   useEffect(() => {
-    const handleCodeChange =({ code }) => {
-      console.log('Received ', code);
+    const handleCodeChange = ({ code }) => {
+      console.log('Received code:', code);
       if (editorRef.current && code !== null) {
         const currentValue = editorRef.current.getValue();
         if (currentValue !== code) {
           editorRef.current.setValue(code);
         }
       }
-    }
+    };
   
     if (socketRef.current && socketRef.current.connected) {
-      socketRef.current.on(ACTIONS.CODE_CHANGE,  handleCodeChange);
+      socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
     }
   
     return () => {
       if (socketRef.current && socketRef.current.connected) {
-        socketRef.current.off(ACTIONS.CODE_CHANGE,handleCodeChange);
+        socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
       }
     };
   }, [socketRef.current]);
+
+  useEffect(() => {
+    const handleSyncCode = ({ code }) => {
+        console.log('Syncing code:', code);
+        if (editorRef.current) {
+            const currentValue = editorRef.current.getValue();
+            if (currentValue !== code) {
+                editorRef.current.setValue(code);
+            }
+        }
+    };
+
+    if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.on(ACTIONS.SYNC_CODE, handleSyncCode);
+    }
+
+    return () => {
+        if (socketRef.current && socketRef.current.connected) {
+            socketRef.current.off(ACTIONS.SYNC_CODE, handleSyncCode);
+        }
+    };
+}, [socketRef.current]);
+
   
 
   const onSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
     const snippet = CODE_SNIPPETS[selectedLanguage];
-    console.log(snippet," sd");
+    console.log(snippet, " sd");
     setEditorValue(snippet);
     if (editorRef.current) {
       editorRef.current.setValue(snippet);
@@ -73,36 +90,25 @@ const CodeEditor = ({ socketRef, roomId }) => {
       if (editorRef.current) {
         const editorElement = editorRef.current.getDomNode();
         if (editorElement) {
-          console.log('rexis', editorElement);
+          console.log('resize', editorElement);
         }
       }
     };
 
-    const throttledHandleResize = () => {
-      const resizeObserver = new ResizeObserver(handleResize);
+    const resizeObserver = new ResizeObserver(handleResize);
 
-      if (editorRef.current) {
-        const editorElement = editorRef.current.getDomNode();
-        if (editorElement) {
-          resizeObserver.observe(editorElement);
-        }
+    if (editorRef.current) {
+      const editorElement = editorRef.current.getDomNode();
+      if (editorElement) {
+        resizeObserver.observe(editorElement);
       }
+    }
 
-      return () => {
-        if (editorRef.current) {
-          const editorElement = editorRef.current.getDomNode();
-          if (editorElement) {
-            resizeObserver.unobserve(editorElement);
-          }
-        }
-        resizeObserver.disconnect();
-      };
-    };
-
-    window.addEventListener('resize', throttledHandleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', throttledHandleResize);
+      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
     };
   }, []);
 
