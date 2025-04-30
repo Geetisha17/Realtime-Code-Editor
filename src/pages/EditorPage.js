@@ -36,8 +36,8 @@ const EditorPage = () => {
         hasJoinedRoom.current = true;
       }
 
-      socketRef.current.off(ACTIONS.JOINED);
-      socketRef.current.off(ACTIONS.DISCONNECTED);
+      // socketRef.current.off(ACTIONS.JOINED);
+      // socketRef.current.off(ACTIONS.DISCONNECTED);
 
       socketRef.current.on(ACTIONS.JOINED, handleUserJoined);
       socketRef.current.on(ACTIONS.DISCONNECTED, handleUserDisconnected);
@@ -48,7 +48,9 @@ const EditorPage = () => {
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
-        socketRef.current.off(ACTIONS.JOINED, handleUserJoined);
+        socketRef.current.off(ACTIONS.JOINED);
+        socketRef.current.off(ACTIONS.DISCONNECTED);
+        // socketRef.current.off(ACTIONS.JOINED, handleUserJoined);
         console.log('Socket disconnected:', socketRef.current); 
         socketRef.current.off(ACTIONS.DISCONNECTED, handleUserDisconnected);
       }
@@ -63,12 +65,13 @@ const EditorPage = () => {
     setClients(newClients);
 
 
-    if (socketRef.current && codeRef.current) {
+    if (socketRef.current && codeRef.current && codeRef.current !== '') {
       console.log('Emitting SYNC_CODE with code:', codeRef.current); 
       socketRef.current.emit(ACTIONS.SYNC_CODE, {
-        // roomId
-          code: codeRef.current,
-          socketId: socketRef.current.id,
+        socketId,
+        roomId,
+          // code: codeRef.current,
+          // socketId: socketRef.current.id,
       });
   }
   };

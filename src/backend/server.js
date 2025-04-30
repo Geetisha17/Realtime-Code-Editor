@@ -46,12 +46,15 @@ io.on('connection', (socket) => {
         console.log(`User ${username} joining room ${roomId}`);
         userSocketMap[socket.id] = username;
         socket.join(roomId);
+
+        const currentCode = roomCodeMap[roomId] || '';
+        socket.emit(ACTIONS.CODE_CHANGE,{code:currentCode});
       
-        const roomCode = roomCodeMap[roomId] || '';
-        io.to(roomId).emit(ACTIONS.SYNC_CODE, {
-          socketId: socket.id,
-          code: roomCode
-        });
+        // const roomCode = roomCodeMap[roomId] || '';
+        // io.to(roomId).emit(ACTIONS.SYNC_CODE, {
+        //   socketId: socket.id,
+        //   code: roomCode
+        // });
       
         const clients = getAllConnectedClients(roomId);
         clients.forEach(({ socketId }) => {
@@ -59,6 +62,7 @@ io.on('connection', (socket) => {
             clients,
             username,
             socketId: socket.id,
+            currentCode
           });
         });
       
@@ -67,20 +71,13 @@ io.on('connection', (socket) => {
       
 
     socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
-        console.log(`Received  from ${socket.id}  room ${roomId}  code: ${code}`);
         roomCodeMap[roomId] = code;
         socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
     });
 
-    socket.on(ACTIONS.SYNC_CODE, ({ socketId, code , roomId}) => {
-        console.log(`Sync code  from socket ${socket.id}`);
-    console.log(`Received socketId: ${socketId}, code: ${code}`);
-        if (code) {
-        roomCodeMap[roomId] = code;
-          io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
-        } else {
-          console.log('NULL ');
-        }
+    socket.on(ACTIONS.SYNC_CODE, ({ socketId , roomId}) => {       
+        const currentCode = roomCodeMap[roomId] || '';
+        io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code:currentCode });
       });
       
     

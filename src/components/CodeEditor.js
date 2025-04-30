@@ -4,28 +4,27 @@ import Langss from './Langss';
 import { CODE_SNIPPETS } from "../constants";
 import Output from './Output';
 import { ACTIONS } from '../Actions';
+import _ from 'lodash';
 
 const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef}) => {
   const editorRef = useRef(null);
   const [language, setLanguage] = useState('cpp');
   const [editorValue, setEditorValue] = useState(CODE_SNIPPETS[language]);
 
+  const debounceEmit = _.debounce((code)=>{
+    socketRef.current.emit(ACTIONS.CODE_CHANGE,{roomId,code});
+  })
+  let preventEmit = false;
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
   
     editor.onDidChangeModelContent(() => {
+      if(preventEmit) return;
       const value = editor.getValue();
       onCodeChange(value);
       console.log('Code changed:', value);
-      socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-        roomId,
-        code: value,
-      });
-      socketRef.current.emit(ACTIONS.SYNC_CODE, {
-        roomId, 
-        code: codeRef.current,
-    });
+      debounceEmit(value);
     });
   };
   
@@ -35,7 +34,11 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef}) => {
       if (editorRef.current && code !== null) {
         const currentValue = editorRef.current.getValue();
         if (currentValue !== code) {
+          preventEmit.current=true;
           editorRef.current.setValue(code);
+          onCodeChange(code);
+          codeRef.current=code;
+          preventEmit.current=false;
         }
       }
     };
