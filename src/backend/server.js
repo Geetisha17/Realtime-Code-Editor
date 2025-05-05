@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
         userSocketMap[socket.id] = username;
         socket.join(roomId);
 
-        const currentCode = roomCodeMap[roomId] || '';
+        const currentCode = roomCodeMap[roomId];
         socket.emit(ACTIONS.CODE_CHANGE,{code:currentCode});
       
         // const roomCode = roomCodeMap[roomId] || '';
@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
 
     socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
         roomCodeMap[roomId] = code;
-        socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+        io.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
     });
 
     socket.on(ACTIONS.SYNC_CODE, ({ socketId , roomId}) => {       

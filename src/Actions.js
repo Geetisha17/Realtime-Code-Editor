@@ -4,6 +4,7 @@ const ACTIONS = {
     SYNC_CODE: 'sync_code',
     JOINED: 'joined',
     DISCONNECTED: 'disconnected',
+    CURSOR_CHANGE: 'cursor_change'
 };
 
 

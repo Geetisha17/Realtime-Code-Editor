@@ -6,25 +6,31 @@ import Output from './Output';
 import { ACTIONS } from '../Actions';
 import _ from 'lodash';
 
-const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef}) => {
+const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef, username}) => {
   const editorRef = useRef(null);
   const [language, setLanguage] = useState('cpp');
   const [editorValue, setEditorValue] = useState(CODE_SNIPPETS[language]);
 
-  const debounceEmit = _.debounce((code)=>{
-    socketRef.current.emit(ACTIONS.CODE_CHANGE,{roomId,code});
-  })
-  let preventEmit = false;
+  const preventEmit = useRef(false);
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
+
+    if(socketRef.current && socketRef.current.connected)
+    {
+      socketRef.current.emit(ACTIONS.SYNC_CODE,
+        {
+          socketId: socketRef.current.id,
+          roomId
+        }
+      )
+    }
   
     editor.onDidChangeModelContent(() => {
-      if(preventEmit) return;
+      if(preventEmit.current) return;
       const value = editor.getValue();
       onCodeChange(value);
       console.log('Code changed:', value);
-      debounceEmit(value);
     });
   };
   
@@ -36,6 +42,7 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef}) => {
         if (currentValue !== code) {
           preventEmit.current=true;
           editorRef.current.setValue(code);
+          setEditorValue(code);
           onCodeChange(code);
           codeRef.current=code;
           preventEmit.current=false;
@@ -55,12 +62,39 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef}) => {
   }, [socketRef.current]);
 
   useEffect(() => {
+    if (!socketRef.current) return;
+  
+    const handleConnect = () => {
+      console.log("Socket connected. Requesting code sync...");
+      socketRef.current.emit(ACTIONS.SYNC_CODE, {
+        socketId: socketRef.current.id,
+        roomId,
+      });
+    };
+  
+    if (socketRef.current.connected) {
+      handleConnect();
+    } else {
+      socketRef.current.on('connect', handleConnect);
+    }
+  
+    return () => {
+      socketRef.current.off('connect', handleConnect);
+    };
+  }, [socketRef.current, roomId]);
+
+  useEffect(() => {
     const handleSyncCode = ({ code }) => {
         console.log('Syncing code:', code);
         if (editorRef.current) {
             const currentValue = editorRef.current.getValue();
             if (currentValue !== code) {
-                editorRef.current.setValue(code);
+              preventEmit.current = true;
+              editorRef.current.setValue(code);
+              setEditorValue(code);
+              onCodeChange(code);
+              codeRef.current=code;
+              preventEmit.current=false;
             }
         }
     };
