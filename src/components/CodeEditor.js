@@ -31,6 +31,13 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange , codeRef, username}) => {
       const value = editor.getValue();
       onCodeChange(value);
       console.log('Code changed:', value);
+      if(socketRef.current)
+        {
+          socketRef.current.emit(ACTIONS.CODE_CHANGE,{
+            roomId,
+            code:value
+          })
+        }
     });
   };
   
