@@ -1,9 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
 import {BrowserRouter ,Route, Routes} from 'react-router-dom';
 import {Toaster} from 'react-hot-toast';
 import EditorPage from './pages/EditorPage';
 import Home from './pages/Home';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 
 function App() {
   return (
@@ -22,7 +23,9 @@ function App() {
     </div>
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Home/>}></Route>
+      <Route path="/" element={<Login/>} />
+      <Route path="/signup" element={<SignUp/>} />
+      <Route path="/home" element={<Home/>}></Route>
       <Route 
       path="/editor/:roomId" 
       element={<EditorPage/>}>
