@@ -16,15 +16,13 @@ const Home = () => {
     };
 
     const joinRoom = () => {
-        if (!roomId || !username) {
+        if (!roomId || !username.trim()) {
             toast.error('Room ID and username are required');
             return;
         }
 
         navigate(`/editor/${roomId}`, {
-            state: {
-                username,
-            },
+            state: {username},
         });
     };
 
@@ -56,9 +54,9 @@ const Home = () => {
                         value={username}
                         onKeyUp={handleInputEnter}
                     />
-                    <button className='btn joinBtn' onClick={joinRoom}>Join</button>
+                    <button className='btn joinBtn' onClick={joinRoom} disabled={!roomId || !username.trim()} >Join</button>
                     <span className='createInfo'>
-                        Don't have an invite? <a onClick={createNewRoom} href="#" className='createNewBtn'>new Room</a>
+                        Don't have an invite? <a onClick={e => { e.preventDefault();createNewRoom(e)}} href="/" className='createNewBtn'>new Room</a>
                     </span>
                 </div>
             </div>

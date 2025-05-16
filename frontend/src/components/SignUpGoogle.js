@@ -3,7 +3,7 @@ import { db } from "../firebase";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-// import '../App.css';
+import '../App.css';
 
 export default function SignUpGoogle() {
     
@@ -36,7 +36,7 @@ export default function SignUpGoogle() {
 
     return (
         <div>
-            <h5>----or sign up with-----</h5>
+            <h5 style={{marginLeft:"8rem"}}>----or sign up with-----</h5>
         <button className="signIn-btn" onClick={handleGoogleSignIn}>
             Sign in with Google
         </button>

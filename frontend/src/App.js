@@ -5,6 +5,7 @@ import EditorPage from './pages/EditorPage';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login/>} />
       <Route path="/signup" element={<SignUp/>} />
+      <Route path="/dashboard" element={<Dashboard/>} />
       <Route path="/home" element={<Home/>}></Route>
       <Route 
       path="/editor/:roomId" 

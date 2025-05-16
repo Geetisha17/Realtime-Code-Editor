@@ -5,7 +5,7 @@ const http = require('http');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 const codeRoutes = require('./routes/codeRoutes');
-const initSocket = require('./socket');
+const {initSocket} = require('./socket');
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use('/', codeRoutes);
+app.use('/api/code', codeRoutes);
 
 initSocket(server);
 
