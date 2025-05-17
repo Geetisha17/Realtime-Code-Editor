@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const { ACTIONS } = require('./Actions');
+const  ACTIONS  = require('./Actions');
 const userSocketMap = {};
 const roomCodeMap = {};
 
@@ -57,6 +57,7 @@ function initSocket(server) {
     socket.on(ACTIONS.SYNC_CODE, ({ socketId, roomId }) => {
       const currentCode = roomCodeMap[roomId] || '';
       console.log(`SYNC_CODE works ${socketId} for ${roomId}`)
+      console.log(`>>> sync code recieved ${currentCode}`);
       io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code: currentCode });
     });
 

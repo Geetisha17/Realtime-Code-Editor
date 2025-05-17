@@ -3,7 +3,7 @@ import Client from '../components/Client';
 import CodeEditor from '../components/CodeEditor';
 import { initSocket } from '../socket';
 import toast from 'react-hot-toast';
-import { ACTIONS } from '../Actions';
+import  ACTIONS  from '../Actions';
 import { useLocation, useNavigate, Navigate, useParams } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import DownloadButton from '../components/DownloadButton';
@@ -18,7 +18,6 @@ const EditorPage = () => {
   const location = useLocation();
   const reactNavigator = useNavigate();
   const { roomId } = useParams();
-  const hasJoinedRoom = useRef(false);
   const mySocketId = useRef(null);
 
     useEffect(() => {
@@ -52,14 +51,6 @@ const EditorPage = () => {
         setClients(newClients);
       };
 
-      // if (!hasJoinedRoom.current) {
-      //   socketRef.current.emit(ACTIONS.JOIN, {
-      //     roomId,
-      //     username: location.state?.username,
-      //   });
-      //   hasJoinedRoom.current = true;
-      // }
-
       socketRef.current.on('connect', () => {
       mySocketId.current = socketRef.current.id;
 
@@ -68,6 +59,16 @@ const EditorPage = () => {
         username: location.state?.username,
         userId:user?.uid
       });
+
+      console.log(">> emitting code sync from client",{
+        socketId:socketRef.currentid,
+        roomId
+      })
+
+      socketRef.current.emit(ACTIONS.SYNC_CODE,{
+      socketId: socketRef.current.id,
+      roomId,
+    })
     });
 
       socketRef.current.on(ACTIONS.JOINED, handleUserJoined);

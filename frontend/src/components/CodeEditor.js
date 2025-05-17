@@ -3,12 +3,11 @@ import { Editor } from '@monaco-editor/react';
 import Langss from './Langss';
 import { CODE_SNIPPETS } from "../constants";
 import Output from './Output';
-import { ACTIONS } from '../Actions';
+import  ACTIONS  from '../Actions';
 import _ from 'lodash';
 
 const CodeEditor = ({ socketRef, roomId, onCodeChange, codeRef, username, initialCode, language,setLanguage }) => {
   const editorRef = useRef(null);
-  // const [language, setLanguage] = useState('cpp');
   const [editorValue, setEditorValue] = useState(initialCode || CODE_SNIPPETS[language]);
 
   const emitCodeChange = useRef(
@@ -30,18 +29,7 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange, codeRef, username, initia
       editor.setValue(value);
       onCodeChange(value);
       codeRef.current = value;
-    
 
-    if(socketRef.current)
-    {
-      console.log("emitting code_sync...");
-      socketRef.current.emit(ACTIONS.SYNC_CODE,
-        {
-          socketId: socketRef.current.id,
-          roomId
-        }
-      )
-    }
   
     editor.onDidChangeModelContent(() => {
       if(preventEmit.current) return;
@@ -49,13 +37,6 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange, codeRef, username, initia
       onCodeChange(value);
       emitCodeChange(value);
       console.log('Code changed:', value);
-      // if(socketRef.current)
-      //   {
-      //     socketRef.current.emit(ACTIONS.CODE_CHANGE,{
-      //       roomId,
-      //       code:value
-      //     })
-      //   }
     });
   };
 
@@ -83,112 +64,26 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange, codeRef, username, initia
   };
 }, [socketRef]);
 
-  
-  // useEffect(() => {
-  //   const handleCodeChange = ({ code }) => {
-  //     console.log('Received code:', code);
-  //     if (editorRef.current && code !== null) {
-  //       const currentValue = editorRef.current.getValue();
-  //       if (currentValue !== code) {
-  //         preventEmit.current=true;
-  //         editorRef.current.setValue(code);
-  //         setEditorValue(code);
-  //         onCodeChange(code);
-  //         codeRef.current=code;
-  //         preventEmit.current=false;
-  //       }
-  //     }
-  //   };
-  
-  //   if (socketRef.current && socketRef.current.connected) {
-  //     socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
-  //   }
-  
-  //   return () => {
-  //     if (socketRef.current && socketRef.current.connected) {
-  //       socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
-  //     }
-  //   };
-  // }, [socketRef.current]);
+useEffect(() => {
+  if (!socketRef.current) return;
 
-  useEffect(() => {
-    if (!socketRef.current) return;
-  
-    const handleConnect = () => {
-      console.log("Socket connected. Requesting code sync...");
-      socketRef.current.emit(ACTIONS.SYNC_CODE, {
-        socketId: socketRef.current.id,
-        roomId,
-      });
-    };
-  
-    if (socketRef.current.connected) {
-      handleConnect();
-    } else {
-      socketRef.current.on('connect', handleConnect);
+  const handleSyncCode = ({ code }) => {
+    if (editorRef.current) {
+      preventEmit.current = true;
+      editorRef.current.setValue(code);
+      onCodeChange(code);
+      codeRef.current = code;
+      preventEmit.current = false;
     }
+  };
+
+  socketRef.current.on(ACTIONS.SYNC_CODE, handleSyncCode);
+
+  return () => {
+    socketRef.current.off(ACTIONS.SYNC_CODE, handleSyncCode);
+  };
+}, [socketRef]);
   
-    return () => {
-      socketRef.current.off('connect', handleConnect);
-    };
-  }, [socketRef, roomId]);
-
-//   useEffect(() => {
-//     const handleSyncCode = ({ code }) => {
-//         console.log('Syncing code:', code);
-//         if (editorRef.current) {
-//             const currentValue = editorRef.current.getValue();
-//             if (currentValue !== code) {
-//               preventEmit.current = true;
-//               editorRef.current.setValue(code);
-//               setEditorValue(code);
-//               onCodeChange(code);
-//               codeRef.current=code;
-//               preventEmit.current=false;
-//             }
-//         }
-//     };
-
-//     if (socketRef.current && socketRef.current.connected) {
-//         socketRef.current.on(ACTIONS.SYNC_CODE, handleSyncCode);
-//     }
-
-//     return () => {
-//         if (socketRef.current && socketRef.current.connected) {
-//             socketRef.current.off(ACTIONS.SYNC_CODE, handleSyncCode);
-//         }
-//     };
-// }, [socketRef.current]);
-// useEffect(() => {
-//   if (!socketRef.current) return;
-
-//   const handleSyncCode = ({ code }) => {
-//     if (editorRef.current) {
-//       preventEmit.current = true;
-//       editorRef.current.setValue(code);
-//       onCodeChange(code);
-//       codeRef.current = code;
-//       preventEmit.current = false;
-//     }
-//   };
-
-//   socketRef.current.on(ACTIONS.SYNC_CODE, handleSyncCode);
-
-//   return () => {
-//     socketRef.current.off(ACTIONS.SYNC_CODE, handleSyncCode);
-//   };
-// }, []);
-  
-
-  // const onSelect = (selectedLanguage) => {
-  //   setLanguage(selectedLanguage);
-  //   const snippet = CODE_SNIPPETS[selectedLanguage];
-  //   console.log(snippet, " sd");
-  //   setEditorValue(snippet);
-  //   if (editorRef.current) {
-  //     editorRef.current.setValue(snippet);
-  //   }
-  // };
   useEffect(() => {
     const snippet = CODE_SNIPPETS[language];
     setEditorValue(snippet);

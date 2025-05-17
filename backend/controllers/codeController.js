@@ -1,5 +1,6 @@
 const request = require('request');
 const Code = require("../models/Code");
+const redisClient = require('../redisClient');
 
 exports.executeCode = (req,res)=>{
     const { language, script } = req.body;
@@ -39,6 +40,8 @@ exports.saveCode = async(req,res)=>{
     try {
         const newCode = new Code({userId,code});
         await newCode.save();
+
+        await redisClient.del(`code:${userId}`);
         res.status(201).json({message: "Code is succesfully saved"});
     } 
     catch (error) {
@@ -51,7 +54,14 @@ exports.getAllCode = async(req,res)=>{
     const {userId} = req.params;
 
     try {
+        const cached = await redisClient.get(`code:${userId}`);
+
+        if(cached)
+            return res.status(200).json({codes: JSON.parse(cached),cached: true});
+        
         const codes = await Code.find({userId});
+
+        await redisClient.set(`code:${userId}`, JSON.stringify(codes), {EX:3600});
         res.status(200).json({codes});
     } catch (error) {
         console.log(error);
@@ -66,6 +76,8 @@ exports.deleteCode = async(req,res)=>{
         const code = await Code.findOneAndDelete({_id:codeId,userId});
         
         if(!code) return res.status(404).json({error:"Code not found"});
+
+        await redisClient.del(`code:${userId}`);
 
         res.status(200).json({message:"Code is succesfully deleted"});
 
@@ -89,6 +101,8 @@ exports.updateCode = async(req,res)=>{
 
         if(!updated) return res.status(404).json({error:"Code not found "});
 
+
+        await redisClient.del(`code:${userId}`);
         res.status(200).json({message:"Code updated"});
     } catch (error) {
         console.log(error);
