@@ -1,6 +1,6 @@
 # Real-Time Code Editor
-The Real-Time Code Editor is an advanced web application designed for seamless collaboration among developers. 
-It enables multiple users to edit code simultaneously in real time, fostering efficient teamwork and rapid iteration cycles. Built with robust features tailored for modern development workflows, it enhances productivity and code quality through its intuitive interface and powerful functionalities.
+The Real-Time Code Editor is a dynamic, full-stack collaborative code editing platform crafted to empower developers with live, interactive coding sessions.
+Built with modern technologies like React, Socket.IO, Redis, and Docker, the application enables multiple users to connect to a shared workspace, write code together in real time, and experience instant collaboration just like they would in a physical coding environment.
 
 ## Features
 - **Real-time Editing**
@@ -14,6 +14,28 @@ Collaborative editing allows multiple users to work on the same file simultaneou
 
 - **Code Formatting**
 Code formatting automatically adjusts the indentation, spacing, and overall structure of code to conform to predefined style guidelines or user preferences. This helps maintain consistency across the codebase, improves readability, and reduces time spent on manual formatting. Users can customize formatting rules or choose from preset configurations to suit their coding standards.
+
+- **Redis Caching**
+When a user requests their saved code snippets, the system first checks Redis for the data.
+If the data exists in the cache (a cache hit), it is returned immediately — significantly faster than querying MongoDB.
+If not (a cache miss), the server queries MongoDB, returns the result, and stores it in Redis for future requests.
+On code fetch, Redis is checked.
+On save/update/delete, the cache is cleared to maintain accuracy.
+
+- **Backend Integration (MongoDB + Firebase Auth)**
+  	All saved code snippets are stored persistently in MongoDB.
+  	Users can save, update, and delete code using secure API endpoints.
+		Authentication is handled through Firebase.
+		Only authenticated users can save or manage code snippets.
+		Sessions are verified securely across the application.
+
+- **Docker + Docker Compose**
+  The entire backend system, including the Redis server, is containerized for reproducibility and cloud deployment.
+Using Docker ensures that the application behaves identically across environments — local, staging, or production.
+
+- **File Download Support**
+Users can download their code directly from the editor in one click.
+This makes it easy to export work for submission, documentation, or further local development.Download is triggered via a frontend utility
   
 ## Installation
 1. Clone the repository:
@@ -22,12 +44,21 @@ Code formatting automatically adjusts the indentation, spacing, and overall stru
 2. Navigate to the project directory:
    ```bash
      cd real-time-code-editor
-3. Install dependencies:
+3. Frontend Setup:
    ```bash
-     npm install
-4. Start the server:
-   ```bash
+    cd frontend
+    npm install
     npm start
-5. Open your browser and go to:
+4. Backend Setup:
+    ```bash
+    cd backend
+    npm install
+    node server.js
+
+5. Docker Setup
+   ```bash
+   docker-compose up --build
+   
+6. Open your browser and go to:
    ```bash
     http://localhost:3000 to use the application.   
