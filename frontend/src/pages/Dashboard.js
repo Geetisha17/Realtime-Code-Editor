@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Client from '../components/Client';
+import { signOut } from 'firebase/auth';
 import '../Dashboard.css';
 
 export default function Dashboard() {
@@ -8,6 +11,8 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -27,13 +32,9 @@ export default function Dashboard() {
       if (!user) return;
       try {
         setLoading(true);
-        const token = await user.getIdToken();
-        const response = await axios.get(`http://localhost:5000/api/code/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCodes(response.data);
+        const response = await axios.get(`http://localhost:5000/api/code/all/${user.uid}`);
+        setCodes(response.data.codes || response.data);
+        console.log("coder",response.data);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -46,10 +47,7 @@ export default function Dashboard() {
 
   const handleDelete = async (codeId) => {
     try {
-      const token = await user.getIdToken();
-      await axios.delete(`http://localhost:5000/api/code/delete/${codeId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`http://localhost:5000/api/code/delete/${user.uid}/${codeId}`);
       setCodes((prev) => prev.filter((item) => item._id !== codeId));
     } catch (err) {
       console.error('Error deleting code:', err);
@@ -67,8 +65,14 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h2>Welcome, {user.displayName || 'User'}!</h2>
-        <p>Email: {user.email}</p>
+        <div className="user-info-box">
+          <Client username={user.displayName || 'User'} photoURL={user.photoURL} />
+          <div className="user-details">
+            <h2>{user.displayName || 'User'}</h2>
+            <p>{user.email}</p>
+          </div>
+        </div>
+        <button className="logout-btn" onClick={() => signOut(auth)}>Logout</button>
       </div>
 
       <h3>Your Saved Code Snippets:</h3>
@@ -82,7 +86,23 @@ export default function Dashboard() {
               <pre className="code-block">{item.code}</pre>
               <div className="code-footer">
                 <small>Saved on: {new Date(item.timestamp).toLocaleString()}</small>
-                <button className="delete-btn" onClick={() => handleDelete(item._id)}>🗑️</button>
+                <div className="button-group">
+                  <button className="action-btn delete" onClick={() => handleDelete(item._id)}>
+                    Delete
+                  </button>
+                  <button className="action-btn update" onClick={() =>
+                    navigate(`/editor/${item._id}`, {
+                      state: {
+                        code: item.code,
+                        codeId: item._id,
+                        username: user.displayName || 'Anonymous'
+                      }
+                    })
+                  }>
+                    Update
+                  </button>
+                </div>
+
               </div>
             </div>
           ))}

@@ -30,44 +30,44 @@ exports.getCompileMessage = (req,res)=>{
 };
 
 exports.saveCode = async(req,res)=>{
-    const {code} = req.body;
-    const userId = req.user.uid;
+    const {code , userId} = req.body;
 
-    if(!code) return req.status(400).json({message:"Code is required"});
+    if (!code || !userId) {
+        return res.status(400).json({ message: "Code and userId are required" });
+    }
 
     try {
         const newCode = new Code({userId,code});
         await newCode.save();
-        res.status(201).json({messgae: "Code is succesfully saved"});
+        res.status(201).json({message: "Code is succesfully saved"});
     } 
     catch (error) {
         console.log(error);
-        req.status(500).json({error:"Failed to save code"});
+        res.status(500).json({error:"Failed to save code"});
     }
 }
 
 exports.getAllCode = async(req,res)=>{
-    const userId = req.user.uid;
+    const {userId} = req.params;
 
     try {
         const codes = await Code.find({userId});
         res.status(200).json({codes});
     } catch (error) {
         console.log(error);
-        res.status(500).json({error:"Unabble to get all Code"});
+        res.status(500).json({error:"Unable to get all Code"});
     }
 }
 
 exports.deleteCode = async(req,res)=>{
-    const userId = req.user.uid;
-    const codeId = req.params.id;
+    const {userId, id:codeId} = req.params;
 
     try {
         const code = await Code.findOneAndDelete({_id:codeId,userId});
         
         if(!code) return res.status(404).json({error:"Code not found"});
 
-        res.json(200).json({message:"Code is succesfully deleted"});
+        res.status(200).json({message:"Code is succesfully deleted"});
 
     } catch (error) {
         console.log(error);
@@ -76,15 +76,13 @@ exports.deleteCode = async(req,res)=>{
 }
 
 exports.updateCode = async(req,res)=>{
-    const userId = req.user.uid;
-    const codeId = req.params.id;
+    const {id: codeId, userId} = req.params;
     const {code} = req.body;
 
     if(!code) return res.status(400).json({error:"Updated code is required"});
-
-
     try {
-        const updated = await Code.findByIdAndUpdate({_id:codeId,userId}, 
+        const updated = await Code.findByIdAndUpdate(
+            {_id:codeId, userId}, 
             {code , updatedAt:Date.now()},
             {new:true}
         );

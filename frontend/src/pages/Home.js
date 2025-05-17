@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import '../Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -33,7 +34,8 @@ const Home = () => {
     };
 
     return (
-        <div className='homePageWrapper'>
+        <div className='homeWrapper'>
+            <div className='homePageWrapper'>
             <div className='formWrapper'>
                 <h2>Live CodeEditor</h2>
                 <h4 className='mainLabel'>Room ID</h4>
@@ -64,6 +66,7 @@ const Home = () => {
                 <h4>RealTime Code Editor</h4>
             </footer>
         </div>
+    </div>
     );
 }
 

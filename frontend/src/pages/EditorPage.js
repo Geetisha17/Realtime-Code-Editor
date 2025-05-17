@@ -6,17 +6,20 @@ import toast from 'react-hot-toast';
 import { ACTIONS } from '../Actions';
 import { useLocation, useNavigate, Navigate, useParams } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
+import DownloadButton from '../components/DownloadButton';
 import axios from 'axios';
 
 const EditorPage = () => {
   const [clients, setClients] = useState([]);
   const [user,setUser] = useState(null);
+  const [language, setLanguage] = useState('cpp');
   const socketRef = useRef(null);
   const codeRef = useRef('');
   const location = useLocation();
   const reactNavigator = useNavigate();
   const { roomId } = useParams();
   const hasJoinedRoom = useRef(false);
+  const mySocketId = useRef(null);
 
     useEffect(() => {
     const auth = getAuth();
@@ -49,13 +52,23 @@ const EditorPage = () => {
         setClients(newClients);
       };
 
-      if (!hasJoinedRoom.current) {
-        socketRef.current.emit(ACTIONS.JOIN, {
-          roomId,
-          username: location.state?.username,
-        });
-        hasJoinedRoom.current = true;
-      }
+      // if (!hasJoinedRoom.current) {
+      //   socketRef.current.emit(ACTIONS.JOIN, {
+      //     roomId,
+      //     username: location.state?.username,
+      //   });
+      //   hasJoinedRoom.current = true;
+      // }
+
+      socketRef.current.on('connect', () => {
+      mySocketId.current = socketRef.current.id;
+
+      socketRef.current.emit(ACTIONS.JOIN, {
+        roomId,
+        username: location.state?.username,
+        userId:user?.uid
+      });
+    });
 
       socketRef.current.on(ACTIONS.JOINED, handleUserJoined);
       socketRef.current.on(ACTIONS.DISCONNECTED, handleUserDisconnected);
@@ -75,33 +88,37 @@ const EditorPage = () => {
   }, [roomId, location.state?.username, reactNavigator]);
 
   const handleSaveCode = async () => {
-  if (!user) {
-    toast.error('You must be logged in to save code.');
-    return;
-  }
-
-  try {
-    const token = await user.getIdToken();
-
-    await axios.post(
-      'http://localhost:5000/api/code/save',
-      {
-        code: codeRef.current,
-        roomId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (!user) {
+        toast.error('You must be logged in to save code.');
+        return;
       }
-    );
+      const codeId = location.state?.codeId;
 
-    toast.success('Code saved successfully!');
-  } catch (error) {
-    console.error('Save error:', error);
-    toast.error('Failed to save code.');
-  }
-};
+      try {
+        if (codeId) {
+          await axios.put(`http://localhost:5000/api/code/update/${user.uid}/${codeId}`, {
+            code: codeRef.current
+          });
+          toast.success('Code updated successfully!');
+        } else {
+          await axios.post('http://localhost:5000/api/code/save', {
+            code: codeRef.current,
+            userId: user.uid
+          });
+          toast.success('Code saved successfully!');
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        toast.error('Failed to save code.');
+      }
+    };
+
+  useEffect(()=>{
+    if(location.state?.code)
+    {
+      codeRef.current = location.state.code;
+    }
+  },[location.state?.code])
 
   
 
@@ -164,12 +181,18 @@ const EditorPage = () => {
         <button className='btn leavebtn' onClick={leaveRoom}>Leave Room</button>
       </div>
       <div className='editorWrap'>
+        <div>
+          <DownloadButton codeRef={codeRef} language={language}/>
+        </div>
         <CodeEditor
           socketRef={socketRef}
           roomId={roomId}
           onCodeChange={(code) => { codeRef.current = code; }}
           codeRef={codeRef}
           username={location.state?.username}
+          initialCode={location.state?.code || ''}
+          setLanguage={setLanguage}
+          language={language}
         />
       </div>
     </div>

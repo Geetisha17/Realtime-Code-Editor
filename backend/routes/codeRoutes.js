@@ -9,14 +9,13 @@ const {
     updateCode 
     } = require('../controllers/codeController');
 
-const verifyToken = require("../middleware/firebaseAuth");
 
 router.get('/compile',getCompileMessage);
 router.post('/compile',executeCode);
 
-router.post('/save',verifyToken,saveCode);
-router.get('/all',verifyToken,getAllCode);
-router.delete('/delete/:id',verifyToken,deleteCode);
-router.put('/update/:id',verifyToken,updateCode);
+router.post('/save',saveCode);
+router.get('/all/:userId',getAllCode);
+router.delete('/delete/:userId/:id',deleteCode);
+router.put('/update/:userId/:id',updateCode);
 
 module.exports = router;

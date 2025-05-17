@@ -56,6 +56,7 @@ function initSocket(server) {
 
     socket.on(ACTIONS.SYNC_CODE, ({ socketId, roomId }) => {
       const currentCode = roomCodeMap[roomId] || '';
+      console.log(`SYNC_CODE works ${socketId} for ${roomId}`)
       io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code: currentCode });
     });
 
@@ -63,7 +64,7 @@ function initSocket(server) {
       const rooms = [...socket.rooms].filter(r => r !== socket.id);
 
       rooms.forEach(roomId => {
-        socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
+        socket.to(roomId).emit(ACTIONS.DISCONNECTED, {
           socketId: socket.id,
           username: userSocketMap[socket.id] || 'Anonymous',
         });

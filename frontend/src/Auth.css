@@ -1,83 +1,163 @@
-body{
-    overflow:hidden;
+* {
+  box-sizing: border-box;
 }
-html{
-  background-color: rgb(112, 37, 183);
+
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0b0c17, #1a1b2b);
+  color: #c8cad4;
+  overflow: hidden;
 }
+
 .auth-container {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: rgb(112, 37, 183);
-  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  perspective: 1000px;
 }
 
 .auth-form {
-  background: white;
-  padding: 2rem 3rem;
+  background-color: rgba(15, 15, 25, 0.9);
+  padding: 40px 30px;
   border-radius: 15px;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
+  width: 420px;
+  max-width: 95vw;
+  box-shadow:
+    0 0 20px 2px rgba(40, 40, 70, 0.8),
+    inset 0 0 20px 1px rgba(20, 20, 40, 0.6);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  animation: slideUp 0.7s ease forwards;
+}
+
+.auth-form::before {
+  content: '';
+  position: absolute;
+  top: -2px; bottom: -2px; left: -2px; right: -2px;
+  background: linear-gradient(270deg, #3f3f7e, #1a2250, #3f3f7e);
+  background-size: 600% 600%;
+  animation: gradientShift 12s ease infinite;
+  border-radius: 17px;
+  filter: brightness(0.5);
+  z-index: -1;
 }
 
 .auth-form h3 {
-  margin-bottom: 1.5rem;
-  color: #333;
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.3rem;
   text-align: center;
+  color: #6a77f7;
+  text-shadow: 0 0 15px #4c52c4bb;
 }
 
 .auth-form label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
   font-weight: 600;
-  color: #555;
+  font-size: 1.1rem;
+  user-select: none;
+  color: #999db3;
 }
 
 .auth-form input {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
   font-size: 1rem;
-  transition: border 0.3s ease;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  background-color: #2c2f50;
+  color: #c8cad4;
+  box-shadow: inset 0 2px 5px #0f1126;
+  outline-offset: 3px;
+  outline-color: transparent;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-form input::placeholder {
+  color: #707393;
+  font-weight: 500;
 }
 
 .auth-form input:focus {
-  border-color: #007bff;
-  outline: none;
+  background-color: #444a7a;
+  box-shadow: inset 0 2px 10px #4a50cc;
+  outline-color: #4a50cc;
+  color: #e0e0ff;
+  transition: all 0.3s ease;
 }
 
 .auth-form button {
-  width: 100%;
-  padding: 0.75rem;
-  background: #007bff;
-  color: white;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  border: none;
+  color: #1a1a2e;
+  background: linear-gradient(90deg, #4a50cc, #2c36aa);
+  box-shadow: 0 6px 18px rgba(74, 80, 204, 0.7);
+  transition: all 0.3s ease;
+  user-select: none;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .auth-form button:hover {
-  background: #0056b3;
+  background: linear-gradient(90deg, #323a8a, #1e2381);
+  box-shadow: 0 8px 22px rgba(30, 35, 129, 0.9);
+  transform: translateY(-2px);
 }
 
 .auth-form h4 {
-  margin-top: 1rem;
+  margin-top: 22px;
+  font-size: 0.9rem;
   text-align: center;
-  font-weight: normal;
+  color: #777b9b;
+  user-select: none;
 }
 
 .auth-form h4 a {
-  color: #007bff;
+  color: #6a77f7;
+  cursor: pointer;
+  font-weight: 700;
   text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
 }
 
 .auth-form h4 a:hover {
-  text-decoration: underline;
+  color: #a3abff;
+  border-color: #6a77f7;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px) rotateX(10deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) rotateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

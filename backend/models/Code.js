@@ -4,7 +4,6 @@ const codeSchema = new mongoose.Schema({
     userId: {
         type:String,
         required: true,
-        ref: 'User'
     },
     code:{
         type:String,

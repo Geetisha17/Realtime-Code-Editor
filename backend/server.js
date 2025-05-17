@@ -6,10 +6,10 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 const codeRoutes = require('./routes/codeRoutes');
 const {initSocket} = require('./socket');
-
 dotenv.config();
 
 const app = express();
+app.use(express.json());
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 
@@ -18,7 +18,7 @@ connectDB();
 app.use(bodyParser.json());
 app.use(cors({
   origin: 'http://localhost:3000',
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials: true,
 }));
 
