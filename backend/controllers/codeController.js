@@ -1,6 +1,7 @@
 const request = require('request');
 const Code = require("../models/Code");
 const redisClient = require('../redisClient');
+require('dotenv').config();
 
 exports.executeCode = (req,res)=>{
     const { language, script } = req.body;
@@ -9,8 +10,8 @@ exports.executeCode = (req,res)=>{
         script: script,
         language: language,
         versionIndex: "0",
-        clientId: "97b63abb86f4cf9326c2643bd93d25c9",
-        clientSecret: "4be49679e4106419ea9894c846ffab09bf721ae3a475fcc88a19c1f1566fea7",
+        clientId: process.env.JDOODLE_CLIENT_ID,
+        clientSecret: process.env.JDOODLE_CLIENT_SECRET,
     };
 
     request({
