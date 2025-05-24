@@ -2,7 +2,7 @@ import axios from 'axios';
 import { LANGS_VERSION } from './constants';
 
 const API = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: `${process.env.REACT_APP_BACKEND_URL}`,
 });
 
 export const executeCode = async (sourceCode, language) => {

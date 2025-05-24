@@ -32,7 +32,7 @@ export default function Dashboard() {
       if (!user) return;
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/code/all/${user.uid}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/code/all/${user.uid}`);
         setCodes(response.data.codes || response.data);
         console.log("coder",response.data);
         setLoading(false);
@@ -47,7 +47,7 @@ export default function Dashboard() {
 
   const handleDelete = async (codeId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/code/delete/${user.uid}/${codeId}`);
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/code/delete/${user.uid}/${codeId}`);
       setCodes((prev) => prev.filter((item) => item._id !== codeId));
     } catch (err) {
       console.error('Error deleting code:', err);

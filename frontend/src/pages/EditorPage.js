@@ -115,12 +115,12 @@ const EditorPage = () => {
 
       try {
         if (codeId) {
-          await axios.put(`http://localhost:5000/api/code/update/${user.uid}/${codeId}`, {
+          await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/code/update/${user.uid}/${codeId}`, {
             code: codeRef.current
           });
           toast.success('Code updated successfully!');
         } else {
-          await axios.post('http://localhost:5000/api/code/save', {
+          await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/code/save`, {
             code: codeRef.current,
             userId: user.uid
           });
