@@ -7,7 +7,10 @@ const connectDB = require('./config/database');
 const codeRoutes = require('./routes/codeRoutes');
 const {initSocket} = require('./socket');
 dotenv.config();
-
+const { connectRedis } = require('./redisClient');
+(async()=>{
+  await connectRedis();
+})();
 const app = express();
 app.use(express.json());
 const server = http.createServer(app);
