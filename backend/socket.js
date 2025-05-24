@@ -47,6 +47,7 @@ function initSocket(server) {
           currentCode,
         });
       });
+      console.log("emitting join to all clients", clients);
     });
 
     socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {

@@ -7,7 +7,7 @@ const API = axios.create({
 
 export const executeCode = async (sourceCode, language) => {
     try {
-        const response = await API.post('/compile', {
+        const response = await API.post('/api/code/compile', {
             language: language,
             version: LANGS_VERSION[language],
             script: sourceCode,

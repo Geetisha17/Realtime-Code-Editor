@@ -28,13 +28,14 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange, codeRef, username, initia
 
       editor.setValue(value);
       onCodeChange(value);
-      codeRef.current = value;
+      codeRef.current = editor.getValue();
 
   
     editor.onDidChangeModelContent(() => {
       if(preventEmit.current) return;
       const value = editor.getValue();
       onCodeChange(value);
+      codeRef.current=value;
       emitCodeChange(value);
       console.log('Code changed:', value);
     });
@@ -45,6 +46,7 @@ const CodeEditor = ({ socketRef, roomId, onCodeChange, codeRef, username, initia
   const socket = socketRef.current;
 
   const handleCodeChange = ({ code }) => {
+    console.log(">>> code change is receieved:", code);
     if (editorRef.current && code !== null) {
       const currentValue = editorRef.current.getValue();
       if (currentValue !== code) {
@@ -68,6 +70,7 @@ useEffect(() => {
   if (!socketRef.current) return;
 
   const handleSyncCode = ({ code }) => {
+    console.log(">>>sync code is working:",code);
     if (editorRef.current) {
       preventEmit.current = true;
       editorRef.current.setValue(code);

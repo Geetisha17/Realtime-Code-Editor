@@ -44,6 +44,7 @@ const EditorPage = () => {
       }
 
       const handleUserJoined = ({ clients: newClients, username, socketId }) => {
+          console.log('Recieved join ',newClients);
         if (username !== location.state?.username) {
           toast.success(`${username} joined the room`);
           console.log(`${username} joined`);
@@ -54,21 +55,38 @@ const EditorPage = () => {
       socketRef.current.on('connect', () => {
       mySocketId.current = socketRef.current.id;
 
-      socketRef.current.emit(ACTIONS.JOIN, {
+        console.log(">>> Sending SYNC_CODE after joing");
+        socketRef.current.emit(ACTIONS.JOIN, {
+        roomId,
+        username: location.state?.username,
+        userId:user?.uid,
+      });
+
+      console.log("Join emmited ", {
         roomId,
         username: location.state?.username,
         userId:user?.uid
       });
 
+      console.log("username ",location.state);
+
       console.log(">> emitting code sync from client",{
-        socketId:socketRef.currentid,
+        socketId:socketRef.current.id,
         roomId
       })
 
-      socketRef.current.emit(ACTIONS.SYNC_CODE,{
-      socketId: socketRef.current.id,
-      roomId,
-    })
+      setTimeout(()=>{
+        if(codeRef.current)
+        {
+          console.log(">>> emitting SYNC_CODE with codeRef");
+          socketRef.current.emit(ACTIONS.SYNC_CODE,{
+          socketId: socketRef.current.id,
+          roomId,
+        })
+        }else{
+          console.log(">>COde ref was wmpty")
+        }
+      },500);
     });
 
       socketRef.current.on(ACTIONS.JOINED, handleUserJoined);
