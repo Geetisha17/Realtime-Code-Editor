@@ -20,7 +20,7 @@ connectDB();
 
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000' , 'https://code-sync-nhngw19qx-geetishatandongmailcoms-projects.vercel.app/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials: true,
 }));
