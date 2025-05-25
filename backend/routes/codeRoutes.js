@@ -17,5 +17,8 @@ router.post('/save',saveCode);
 router.get('/all/:userId',getAllCode);
 router.delete('/delete/:userId/:id',deleteCode);
 router.put('/update/:userId/:id',updateCode);
+router.get("/",(req,res)=>{
+    res.send("Welcome to realtime code editor backend");
+})
 
 module.exports = router;
