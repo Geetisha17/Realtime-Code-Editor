@@ -14,7 +14,7 @@ function getAllConnectedClients(io, roomId) {
 function initSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: ['http://localhost:3000', 'https://code-sync-nhngw19qx-geetishatandongmailcoms-projects.vercel.app/'],
+      origin: "*",
       methods: ['GET', 'POST'],
       credentials: true,
     },

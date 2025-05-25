@@ -27,6 +27,36 @@ app.use(cors({
 
 app.use('/api/code', codeRoutes);
 
+app.post('/ws', (req, res) => {
+  const { action, ...payload } = req.body;
+
+  switch (action) {
+    case 'join':
+      console.log(`[WS-ACTION] join`, payload);
+      return res.status(200).json({ message: 'Join event received' });
+
+    case 'code_change':
+      console.log(`[WS-ACTION] code_change`, payload);
+      return res.status(200).json({ message: 'Code change received' });
+
+    case 'sync_code':
+      console.log(`[WS-ACTION] sync_code`, payload);
+      return res.status(200).json({ message: 'Sync request received' });
+
+    case 'joined':
+      console.log(`[WS-ACTION] joined`, payload);
+      return res.status(200).json({ message: 'User joined event acknowledged' });
+
+    case 'disconnected':
+      console.log(`[WS-ACTION] disconnected`, payload);
+      return res.status(200).json({ message: 'User disconnected' });
+
+    default:
+      console.warn(`[WS-ACTION] Unknown action: ${action}`);
+      return res.status(400).json({ error: 'Unknown action' });
+  }
+});
+
 initSocket(server);
 
 server.listen(PORT,'0.0.0.0', () => {
