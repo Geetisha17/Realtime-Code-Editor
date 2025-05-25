@@ -1,6 +1,6 @@
 const request = require('request');
 const Code = require("../models/Code");
-const {redisClient } = require('../redisClient');
+const {redisClient , ensureConnected } = require('../redisClient');
 require('dotenv').config();
 
 exports.executeCode = (req,res)=>{
@@ -60,18 +60,18 @@ exports.getAllCode = async(req,res)=>{
     console.log("Requested userID:",userId);
 
     try {
-        // await ensureConnected();
-        // const cached = await redisClient.get(`code:${userId}`);
+        await ensureConnected();
+        const cached = await redisClient.get(`code:${userId}`);
 
-        // console.log("cached valueeee ",cached);
+        console.log("cached valueeee ",cached);
 
-        // if(cached)
-            // return res.status(200).json({codes: JSON.parse(cached),cached: true});
+        if(cached)
+            return res.status(200).json({codes: JSON.parse(cached),cached: true});
         
         const codes = await Code.find({userId});
         console.log(codes);
 
-        // await redisClient.set(`code:${userId}`, JSON.stringify(codes), {EX:3600});
+        await redisClient.set(`code:${userId}`, JSON.stringify(codes), {EX:3600});
         res.status(200).json({codes});
     } catch (error) {
         console.log(error);

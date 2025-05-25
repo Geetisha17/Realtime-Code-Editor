@@ -15,19 +15,19 @@ client.on('connect', () => {
 async function connectRedis() {
   try
   {
-    if (!client.isReady) {
+    if (!client.isOpen) {
       await client.connect();
       console.log("Redis client connected");
     }
   }catch(err)
   {
-    console.log(err.message);
+    console.log("Reddis not connected", err.message);
   }
 }
 
 async function ensureConnected()
 {
-  if(!client.isOpen)
+  if(!client.isReady)
       await client.connect();
 }
 
