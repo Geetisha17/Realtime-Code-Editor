@@ -33,19 +33,22 @@ exports.getCompileMessage = (req,res)=>{
 
 exports.saveCode = async(req,res)=>{
     const {code , userId} = req.body;
-
+    console.log(">>>>SAVE REQUEST BODY: <<<<",req.body);
+    
     if (!code || !userId) {
+        console.log("Missing code or userId: <<<< ");
         return res.status(400).json({ message: "Code and userId are required" });
     }
 
     try {
         const newCode = new Code({userId,code});
         await newCode.save();
-
+        console.log("CODE IS SAVEDDDD IN DBBB");
         await redisClient.del(`code:${userId}`);
         res.status(201).json({message: "Code is succesfully saved"});
     } 
     catch (error) {
+        console.log("ERRORRRRR ");
         console.log(error);
         res.status(500).json({error:"Failed to save code"});
     }
