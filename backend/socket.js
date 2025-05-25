@@ -14,7 +14,7 @@ function getAllConnectedClients(io, roomId) {
 function initSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: ["http://realtime-code-editor-application.s3-website-us-east-1.amazonaws.com/", "http://localhost:3000"],
       methods: ['GET', 'POST'],
       credentials: true,
     },
