@@ -1,6 +1,6 @@
 const request = require('request');
 const Code = require("../models/Code");
-const redisClient = require('../redisClient');
+const {redisClient , ensureConnected} = require('../redisClient');
 require('dotenv').config();
 
 exports.executeCode = (req,res)=>{
@@ -55,6 +55,7 @@ exports.getAllCode = async(req,res)=>{
     const {userId} = req.params;
 
     try {
+        await ensureConnected();
         const cached = await redisClient.get(`code:${userId}`);
 
         if(cached)

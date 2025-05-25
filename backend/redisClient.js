@@ -1,7 +1,7 @@
 const redis = require('redis');
 
 const client = redis.createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
+  url: process.env.REDIS_URL || 'redis://redis:6379',
 });
 
 client.on('error', (err) => {
@@ -13,12 +13,26 @@ client.on('connect', () => {
 });
 
 async function connectRedis() {
-  if (!client.isOpen) {
-    await client.connect();
+  try
+  {
+    if (!client.isReady) {
+      await client.connect();
+      console.log("Redis client connected");
+    }
+  }catch(err)
+  {
+    console.log(err.message);
   }
 }
 
+async function ensureConnected()
+{
+  if(!client.isOpen())
+      await client.connect();
+}
+
 module.exports = {
+  ensureConnected,
   connectRedis,
   redisClient: client,
 };
