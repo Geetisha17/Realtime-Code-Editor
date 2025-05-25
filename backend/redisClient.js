@@ -27,7 +27,7 @@ async function connectRedis() {
 
 async function ensureConnected()
 {
-  if(!client.isOpen())
+  if(!client.isOpen)
       await client.connect();
 }
 
