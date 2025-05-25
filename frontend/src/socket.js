@@ -8,5 +8,5 @@ export const initSocket = async () => {
         transports: ['websocket'],
     };
 
-    return io(`ws://44.203.254.128:5000`, options); 
+    return io(`wss://hqm1d9ki95.execute-api.us-east-1.amazonaws.com/production/`, options); 
 };
