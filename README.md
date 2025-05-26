@@ -36,7 +36,31 @@ Using Docker ensures that the application behaves identically across environment
 - **File Download Support**
 Users can download their code directly from the editor in one click.
 This makes it easy to export work for submission, documentation, or further local development.Download is triggered via a frontend utility
-  
+
+
+> **Note**: The frontend is deployed but currently non-functional due to WebSocket (`socket.io`) requiring HTTPS. The backend is fully deployed and functional on AWS. You can test all API endpoints via Postman or Thunder Client.
+
+## Backend API Base URL
+
+**http://44.203.254.128:5000/api/code/**
+
+## Available Routes
+
+| Method | Endpoint                        | Description                              |
+|--------|----------------------------------|------------------------------------------|
+| GET    | `/compile`                      | Returns a test compile message           |
+| POST   | `/compile`                      | Executes code compilation                |
+| POST   | `/save`                         | Saves a code snippet for a user          |
+| GET    | `/all/:userId`                 | Fetches all saved code for a user        |
+| DELETE | `/delete/:userId/:id`          | Deletes a code snippet for a user        |
+| PUT    | `/update/:userId/:id`          | Updates a saved snippet for a user       |
+
+## Demo Videos + Screenshots
+
+Watch the full demonstration and view screenshots here:  
+**[Google Drive - Demo & Screenshots](https://drive.google.com/drive/folders/1N7nHzwyDIJP5w2_QTx8ztc22NtxBlTZd?usp=sharing)**
+
+
 ## Installation
 1. Clone the repository:
    ```bash
