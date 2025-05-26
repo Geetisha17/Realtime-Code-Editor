@@ -21,7 +21,7 @@ connectDB();
 app.use(bodyParser.json());
 app.use(cors({
   origin: ['http://localhost:3000' ,
-     'http://realtime-code-editor-application.s3-website-us-east-1.amazonaws.com/',
+     'http://realtime-code-editor-application.s3-website-us-east-1.amazonaws.com',
   'http://44.203.254.128:5000',
 'https://realtime-code-editor-w71x.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
