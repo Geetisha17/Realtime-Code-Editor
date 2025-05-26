@@ -34,7 +34,7 @@ export default function Dashboard() {
 
     try {
       setLoading(true);
-      const response = await axios.get(`https://8c4f-44-203-254-128.ngrok-free.app/api/code/all/${uid}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/code/all/${uid}`);
       console.log("Raw response:", response);
 
       const data = Array.isArray(response.data?.codes)

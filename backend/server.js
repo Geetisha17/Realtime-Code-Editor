@@ -22,8 +22,8 @@ app.use(bodyParser.json());
 app.use(cors({
   origin: ['http://localhost:3000' ,
      'http://realtime-code-editor-application.s3-website-us-east-1.amazonaws.com/',
-    'https://8c4f-44-203-254-128.ngrok-free.app',
-  'http://44.203.254.128:5000'],
+  'http://44.203.254.128:5000',
+'https://realtime-code-editor-w71x.onrender.com/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials: true,
 }));
@@ -32,6 +32,6 @@ app.use('/api/code', codeRoutes);
 
 initSocket(server);
 
-server.listen(PORT, () => {
+server.listen(PORT,'0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
