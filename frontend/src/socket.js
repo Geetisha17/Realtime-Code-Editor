@@ -8,5 +8,5 @@ export const initSocket = async () => {
         transports: ['websocket'],
     };
 
-    return io(`wss://hqm1d9ki95.execute-api.us-east-1.amazonaws.com/production/`, options); 
+    return io(`https://1358-44-203-254-128.ngrok-free.app`, options); 
 };
