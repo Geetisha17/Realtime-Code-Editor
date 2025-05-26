@@ -2,6 +2,10 @@ const redis = require('redis');
 
 const client = redis.createClient({
   url: process.env.REDIS_URL ,
+  socket:{
+    tls:true,
+    reconnectStrategy: retries => Math.min(retries*100,3000),
+  }
 });
 
 client.on('error', (err) => {
