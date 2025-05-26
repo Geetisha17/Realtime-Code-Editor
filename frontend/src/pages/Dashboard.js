@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Client from '../components/Client';
-import { signOut } from 'firebase/auth';
 import '../Dashboard.css';
 
 export default function Dashboard() {
@@ -28,22 +27,34 @@ export default function Dashboard() {
   }, [auth]);
 
   useEffect(() => {
-    const fetchUserCode = async () => {
-      if (!user) return;
-      try {
-        setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/code/all/${user.uid}`);
-        setCodes(response.data.codes || response.data);
-        console.log("coder",response.data);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-        setLoading(false);
-      }
-    };
+  const fetchUserCode = async () => {
+    const uid = user?.uid || auth.currentUser?.uid;
 
-    fetchUserCode();
-  }, [user]);
+    if (!uid) return;
+
+    try {
+      setLoading(true);
+      const response = await axios.get(`https://8c4f-44-203-254-128.ngrok-free.app/api/code/all/${uid}`);
+      console.log("Raw response:", response);
+
+      const data = Array.isArray(response.data?.codes)
+        ? response.data.codes
+        : Array.isArray(response.data)
+        ? response.data
+        : [];
+
+      setCodes(data);
+      console.log("Final code array:", data);
+    } catch (error) {
+      console.error("Error fetching codes:", error);
+      setCodes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchUserCode();
+}, [user]);
 
   const handleDelete = async (codeId) => {
     try {
@@ -102,7 +113,6 @@ export default function Dashboard() {
                     Update
                   </button>
                 </div>
-
               </div>
             </div>
           ))}

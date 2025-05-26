@@ -8,5 +8,5 @@ export const initSocket = async () => {
         transports: ['websocket'],
     };
 
-    return io(`https://1358-44-203-254-128.ngrok-free.app`, options); 
+    return io(`https://8c4f-44-203-254-128.ngrok-free.app`, options); 
 };

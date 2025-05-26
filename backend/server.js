@@ -22,7 +22,8 @@ app.use(bodyParser.json());
 app.use(cors({
   origin: ['http://localhost:3000' ,
      'http://realtime-code-editor-application.s3-website-us-east-1.amazonaws.com/',
-    'https://1358-44-203-254-128.ngrok-free.app'],
+    'https://8c4f-44-203-254-128.ngrok-free.app',
+  'http://44.203.254.128:5000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials: true,
 }));
